@@ -5,106 +5,152 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
-import './contact-form.css';
+import "./contact-form.css";
+import "../../App.css"; // Assuming you want to include global styles
+import { sendContactData } from "../api/axios-api";
+import { Toast } from "primereact/toast";
+import { useRef } from "react";
 
 
+const initialValues = {
+  name: "",
+  surname: "",
+  email: "",
+  message: "",
+};
+
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Required"),
+  surname: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
+  message: Yup.string().required("Required"),
+});
+const handleSubmit  =async (values, { setSubmitting, resetForm },toast) => {
+  const payload = {
+    name: `${values.name} ${values.surname}`,
+    email: values.email,
+    message: values.message,
+  };
+
+  try {
+    const response = await sendContactData(payload);
+    if (response) {
+      // Show success message
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Message sent successfully!",
+        life: 3000,
+      });
+      // Reset the form
+      resetForm();
+    }else {
+      throw new Error("Failed to send message");
+    }
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "An error occurred while sending your message. Please try again later.",
+      life: 3000,
+    });
+  }
+  finally {
+    setSubmitting(false);
+  }
+};
+    
 const ContactForm = () => {
-  const validationSchema = Yup.object({
-    name: Yup.string().required("Required"),
-    surname: Yup.string().required("Required"),
-    email: Yup.string().email("Invalid email").required("Required"),
-    message: Yup.string().required("Required"),
-  });
+  const toast = useRef(null);
 
   return (
+
     <section id="contact" className="p-4" style={{ background: "#242424" }}>
+    <Toast ref={toast} />
       <div className="text-center mb-4">
-        <h1 className="text-4xl font-bold">Contact us</h1>
+        <h1 className="text-4xl font-bold">Contact Us</h1>
       </div>
 
       <Formik
-        initialValues={{ name: "", surname: "", email: "", message: "" }}
+        initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
-          const payload = {
-            name: `${values.name} ${values.surname}`,
-            email: values.email,
-            message: values.message,
-          };
-
-          fetch("https://myportfolio-backend-q6na.onrender.com/api/v1/contact", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          })
-            .then((res) => {
-              if (!res.ok) throw new Error("Failed");
-              return res.json();
-            })
-            .then(() => {
-              alert("Message sent!");
-              resetForm();
-            })
-            .catch(() => alert("Failed to send"))
-            .finally(() => setSubmitting(false));
-        }}
+        onSubmit={(values, actions) => handleSubmit(values, actions, toast)}
       >
         {({ errors, touched, isSubmitting, handleChange, values }) => (
-          <Form className="p-fluid" style={{ maxWidth: "700px", margin: "auto" }}>
-          <div class="formgrid grid">
-    <div class="field col">
-        <label>First name</label>
-        <input name= "name" value={values.name} id="firstname2" type="text" className="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-        
-        </input>
-    </div>
-    
-    <div class="field col">
-        <label >Lastname</label>
-        <input name= "surname" value={values.surname} id="lastname2" type="text" className="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
-     onChange={handleChange}
-    
-                  
-              />
+          <Form
+            className="p-fluid"
+            style={{ maxWidth: "700px", margin: "auto" }}
+          >
+            <div className="formgrid grid">
+              <div className="field col-12 md:col-6">
+                <label>First name</label>
+                <input
+                  name="name"
+                  id="firstname2"
+                  type="text"
+                  value={values.name}
+                  onChange={handleChange}
+                  className={`p-inputtext p-component bg-white border-round-3xl text-black w-full ${
+                    errors.name && touched.name ? "p-invalid" : ""
+                  }`}
+                />
+                {errors.name && touched.name && (
+                  <small className="p-error">{errors.name}</small>
+                )}
+              </div>
+
+              <div className="field col-12 md:col-6">
+                <label>Lastname</label>
+                <input
+                  name="surname"
+                  id="lastname2"
+                  type="text"
+                  value={values.surname}
+                  onChange={handleChange}
+                  className={`p-inputtext p-component bg-white border-round-3xl text-black w-full ${
+                    errors.surname && touched.surname ? "p-invalid" : ""
+                  }`}
+                />
                 {errors.surname && touched.surname && (
                   <small className="p-error">{errors.surname}</small>
                 )}
-    
-   
-    </div>
-</div>
+              </div>
+              <div className="field col-12 ">
+                <label>Email</label>
+                <input
+                  name="email"
+                  type="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  className={`p-inputtext p-component bg-white border-round-3xl text-black w-full ${
+                    errors.email && touched.email ? "p-invalid" : ""
+                  }`}
+                />
 
+                {errors.email && touched.email && (
+                  <small className="p-error">{errors.email}</small>
+                )}
+              </div>
 
-
-            <div className="mb-3">
-              <label>Email</label>
-              <InputText
-                name="email"
-                type="email"
-                value={values.email}
-                onChange={handleChange}
-                className={errors.email && touched.email ? "p-invalid" : ""}
-              />
-              {errors.email && touched.email && (
-                <small className="p-error">{errors.email}</small>
-              )}
+              <div className="field col-12">
+                <label>How can we help?</label>
+                <InputTextarea
+                  name="message"
+                  type="text"
+                  value={values.message}
+                  onChange={handleChange}
+                  rows={8}
+                  autoResize
+                  className={`p-inputtext p-component bg-white  border-round-3xl text-black w-full ${
+                    errors.message && touched.message ? "p-invalid" : ""
+                  }`}
+                />
+                {errors.message && touched.message && (
+                  <small className="p-error">{errors.message}</small>
+                )}
+              </div>
             </div>
-
-            <div className="mb-3">
-              <label>How can we help?</label>
-              <InputTextarea
-                name="message"
-                value={values.message}
-                onChange={handleChange}
-                rows={6}
-                autoResize
-                className={errors.message && touched.message ? "p-invalid" : ""}
-              />
-              {errors.message && touched.message && (
-                <small className="p-error">{errors.message}</small>
-              )}
-            </div>
-
             <Divider />
 
             <Button
@@ -112,7 +158,7 @@ const ContactForm = () => {
               icon="pi pi-send"
               type="submit"
               loading={isSubmitting}
-              className="p-button-rounded p-button-lg p-button-secondary"
+              className="p-button-rounded p-button-lg p-button-primary"
             />
           </Form>
         )}

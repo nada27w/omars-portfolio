@@ -1,11 +1,12 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
-
+import axiosInstance from '../api/axios-uitls';
 export const fetchCategories = createAsyncThunk(
   'categories/fetchCategories', async () => {
-    const response = await axios.get('https://myportfolio-backend-q6na.onrender.com/api/v1/categories');
+    const response = await axiosInstance.get('/categories');
     return response.data.data;
   });
+  
 
 
 const categoriesSlice = createSlice({

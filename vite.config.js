@@ -6,8 +6,10 @@ export default defineConfig({
   plugins: [react()],
   assetsInclude: ["**/*.JPEG"],
   base: "/omars-portfolio/",
+  host: 'localhost',
   server: {
-    host: 'localhost',
-    port: 5173
-  }
+    port: 5173,
+    open: true,
+  },
 });
+

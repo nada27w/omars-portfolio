@@ -1,18 +1,33 @@
 import { Panel } from "primereact/panel";
 import { Button } from "primereact/button";
-import { useState, useEffect } from "react";
+
 
 const Works = () => {
-  console.log("works render");
-  let [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    fetch("assets/projects.json")
-      .then((response) => response.json())
-      .then((data) => setProjects(data));
-  }, []);
-
+  const projects = [
+    {
+      title: "Kuyua Landing Page",
+      icon: "pi pi-external-link",
+      img: "assets/kuyuaworks.png",
+      description: "Landing page for Kuyua, a leading environmental solutions software, implemented in Europe, GR ",
+      url: "https://kuyua.com",
+    },
+    {
+      title: "Chiral Client App",
+      icon: "pi pi-external-link",
+      img: `assets/chiralworks.png`,
+      description: "Chiral client app, dental clinic management software, trusted by 100+ clinics in United Kingdom",
+      url: "https://chiralcloud.com/z3rG2baJGMRJAQyw/165841866",
+    },
+    {
+      title: "Kuyua Client App",
+      icon: "pi pi-external-link",
+      img: "assets/kuyuaclientworks.png",
+      description: "Kuyua client app, environmental solutions software, implemented in Europe, GR",
+      url: "https://staging.kuyua.net/login",
+    },
+  ];
   const panelHeader = (project) => {
+    console.log("header render");
     return (
       <div className="flex w-full justify-content-between align-items-center h-5rem panel-header">
         <div>

@@ -67,3 +67,34 @@
   height: 100%;
   border-radius: 50%;
 }
+.p-inputtext:enabled:focus {
+  outline: none;
+  box-shadow: none;
+border-color: #fff;
+}
+.p-inputtext:enabled {
+  background-color: #fff;
+  color: #000;
+}
+.p-inputtext:enabled:hover
+{
+  border-color: #fff;
+}
+.p-inputtext:enabled:focus {
+  border-color: #fff;
+  box-shadow: none;
+}
+
+.p-inputtext:autofill {
+  outline: none;
+  box-shadow: none;
+  border-color: #fff;
+  background-color: #fff !important;
+}
+
+input:-webkit-autofill {
+  background-color: white !important;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: black !important; 
+  transition: background-color 9999s ease-in-out 0s;
+}
